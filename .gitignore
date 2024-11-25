@@ -1,0 +1,3 @@
+backup/
+*.db
+__pycache__/
