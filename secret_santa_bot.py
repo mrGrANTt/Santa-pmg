@@ -15,7 +15,6 @@ import shutil
 import Vareable
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-
 # Initializing the bot and dispatcher with async functionality
 bot = Bot(token=Vareable.BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
 dp = Dispatcher()
@@ -113,7 +112,8 @@ async def enter_preferences(message: Message, state: FSMContext):
     conn.commit()
 
     await message.answer(f"Вы записаны на тайного Санту!\nИмя: {name}\nПредпочтения: {preferences}")
-    await bot.send_message(Vareable.ADMIN_ID, f"Игрок записан на тайного Санту!\nИмя: {name}\nПредпочтения: {preferences}")
+    await bot.send_message(Vareable.ADMIN_ID,
+                           f"Игрок записан на тайного Санту!\nИмя: {name}\nПредпочтения: {preferences}")
     await state.clear()
 
 
@@ -284,6 +284,7 @@ async def broadcast_message(message: Message):
         await message.answer("Нет доступа к команде!")
         return
 
+    await bot.send_message(Vareable.ADMIN_ID, "Stopping proces!")
     text = message.text.split(' ', 1)[1] if ' ' in message.text else ''
     if not text:
         await message.answer("Укажите сообщение для отправки после команды.")
@@ -291,6 +292,16 @@ async def broadcast_message(message: Message):
     cursor.execute("SELECT user_id FROM players")
     for (user_id,) in cursor.fetchall():
         await bot.send_message(user_id, f"Глобальное сообщение: {text}")
+
+
+# Admin: Send global message
+@dp.message(Command("stop"))
+async def broadcast_message(message: Message):
+    if message.from_user.id != Vareable.ADMIN_ID:
+        await message.answer("Нет доступа к команде!")
+        return
+    await stopping()
+
 
 
 @dp.callback_query(lambda callback: callback.data == "cansel")
@@ -309,9 +320,12 @@ async def runBot():
     await dp.start_polling(bot)
 
 
+enabled = 1
+
+
 async def copy_db_periodically(src):
     next_run = datetime.now() + timedelta(hours=Vareable.INTERVAL)
-    while True:
+    while enabled != 0:
         now = datetime.now()
         if now >= next_run:
             try:
@@ -341,19 +355,22 @@ async def backUp():
     await copy_db_periodically(secret_santa_db)
 
 
-def handle_signsl(signsl, frame):
-    print("Завершаем процесс...")
-    sys.exit(0)
+async def stopping():
+    print("Stopping proces, wait for a minute...")
+    await bot.send_message(Vareable.ADMIN_ID, "Stopping proces, wait for a minute...")
 
-
-signal.signal(signal.SIGINT, handle_signsl)
-signal.signal(signal.SIGTERM, handle_signsl)
-
+    await dp.stop_polling()
+    global enabled
+    enabled = 0
 
 async def main():
-    await asyncio.gather(runBot(), backUp())
-    await bot.send_message(Vareable.ADMIN_ID, "off!")
+    bot_task = asyncio.create_task(runBot())
+    backup_task = asyncio.create_task(backUp())
 
+    try:
+        await asyncio.gather(bot_task, backup_task)
+    except KeyboardInterrupt:
+        await stopping()
 
 if __name__ == "__main__":
     asyncio.run(main())
