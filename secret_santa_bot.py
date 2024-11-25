@@ -1,4 +1,6 @@
+import signal
 import sqlite3
+import sys
 from datetime import datetime, timedelta
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
@@ -337,6 +339,15 @@ async def copy_db_periodically(src):
 async def backUp():
     print("beckUp")
     await copy_db_periodically(secret_santa_db)
+
+
+def handle_signsl(signsl, frame):
+    print("Завершаем процесс...")
+    sys.exit(0)
+
+
+signal.signal(signal.SIGINT, handle_signsl)
+signal.signal(signal.SIGTERM, handle_signsl)
 
 
 async def main():
