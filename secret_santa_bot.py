@@ -1,6 +1,4 @@
-import signal
 import sqlite3
-import sys
 from datetime import datetime, timedelta
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
@@ -365,10 +363,9 @@ async def stopping():
 
 async def main():
     bot_task = asyncio.create_task(runBot())
-    backup_task = asyncio.create_task(backUp())
 
     try:
-        await asyncio.gather(bot_task, backup_task)
+        await asyncio.gather(bot_task)
     except KeyboardInterrupt:
         await stopping()
 
