@@ -194,7 +194,7 @@ async def list_players(message: Message):
     if not players:
         await message.answer("Нет игроков в игре.")
     else:
-        response = "Игроки:\n\n" + "\n".join([f"`{p[2]}`-{p[2]}({p[0]}) - {p[1]}" for p in players])
+        response = "Игроки:\n\n" + "\n".join([f"`{p[2]}`-{p[4]}({p[0]})\n >> {p[1]}\n\n" for p in players])
         await message.answer(response, parse_mode="Markdown")
 
 
