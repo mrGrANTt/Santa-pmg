@@ -282,7 +282,6 @@ async def broadcast_message(message: Message):
         await message.answer("Нет доступа к команде!")
         return
 
-    await bot.send_message(Vareable.ADMIN_ID, "Stopping proces!")
     text = message.text.split(' ', 1)[1] if ' ' in message.text else ''
     if not text:
         await message.answer("Укажите сообщение для отправки после команды.")
