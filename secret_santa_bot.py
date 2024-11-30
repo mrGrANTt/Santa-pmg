@@ -189,12 +189,12 @@ async def list_players(message: Message):
         await message.answer("Нет доступа к команде!")
         return
 
-    cursor.execute("SELECT name, preferences, user_id FROM players")
+    cursor.execute("SELECT name, preferences, user_id, username FROM players")
     players = cursor.fetchall()
     if not players:
         await message.answer("Нет игроков в игре.")
     else:
-        response = "Игроки:\n\n" + "\n".join([f"`{p[2]}` ({p[0]}) - {p[1]}\n\n" for p in players])
+        response = "Игроки:\n\n" + "\n".join([f"`{p[2]}`-{p[2]}({p[0]}) - {p[1]}" for p in players])
         await message.answer(response, parse_mode="Markdown")
 
 
