@@ -1,5 +1,12 @@
-BOT_TOKEN =
-ADMIN_ID =
-INTERVAL =
-GAME_STARTED =
-JOINURL =
+BOT_TOKEN = ""
+ADMIN_ID = None
+DB_FILE = "secret_santa.db"
+WELCOME_MSG = "пиривет!"
+PRINT_NAME_MSG = "Введи имя!"
+PRINT_WISHES_MSG = "Введи предпочтения!"
+SUCCESS_REGISTRY_MSG = "Вы зырегестрированы!"
+YOU_BANED_MSG = "Вы заблокированы!"
+YOU_KICKED_MSG = "Вы были выброшены из игры, но всё ещё можете повторно зарегестрироваться введя /start"
+MENU_MSG = "Меню"
+MSG_SEND = "Сообщение отправлено"
+HAVE_NOT_PERMISSION = "Недостаточно доступа"
