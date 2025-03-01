@@ -1,5 +1,3 @@
-from pathlib import Path
-
 BOT_TOKEN = "7272189082:AAHsqAypl-ozlp5VXLpZqgrCiJkwm3pyiAM"
 ADMIN_ID = None
 DB_FILE = "secret_santa.db"
