@@ -1,3 +1,5 @@
+from tokenize import String
+
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -43,12 +45,14 @@ async def get_wishes(message: Message, state: FSMContext):
     secret_santa_bot.cursor.execute("INSERT OR REPLACE Into users(user_id, username, name, wishes) VALUES (?, ?, ?, ?)", (user_id, us, name, wishes))
     secret_santa_bot.conn.commit()
     await message.answer(Vareable.SUCCESS_REGISTRY_MSG)
-    await secret_santa_bot.bot.send_message(Vareable.ADMIN_ID, f"Пользователь \"{name}\" записан")
+    if Vareable.ADMIN_ID:
+        await secret_santa_bot.bot.send_message(Vareable.ADMIN_ID, f"Пользователь \"{name}\" записан")
     await state.clear()
 
 @router.message(States.MsgState.message)
-async def get_wishes(message: Message, state: FSMContext):
-    if await state.get_value("edit_type") == "edit_name":
+async def egit_values_message(message: Message, state: FSMContext):
+    eType = await state.get_value("edit_type")
+    if eType == "edit_name" or eType == "edit_plr_name":
         column = "name"
     else:
         column = "wishes"
@@ -58,12 +62,11 @@ async def get_wishes(message: Message, state: FSMContext):
     await state.clear()
 
 @router.message(States.AdmMsgState.message)
-async def get_wishes(message: Message):
-    await secret_santa_bot.bot.send_message(Vareable.ADMIN_ID, "Новое сообщение!")
-    await secret_santa_bot.bot.send_message(Vareable.ADMIN_ID, message.text)
-    await message.answer(Vareable.MSG_SEND)
-
-
+async def admin_message(message: Message):
+    if Vareable.ADMIN_ID:
+        await secret_santa_bot.bot.send_message(Vareable.ADMIN_ID, "Новое сообщение!")
+        await secret_santa_bot.bot.send_message(Vareable.ADMIN_ID, message.text)
+        await message.answer(Vareable.MSG_SEND)
 
 
 
@@ -85,6 +88,8 @@ async def start(message: Message, state: FSMContext):
 async def im_admin(message: Message):
     if not Vareable.ADMIN_ID:
         Vareable.ADMIN_ID = message.from_user.id
+        with open("admin.txt", "a+", encoding="utf-8") as f:
+            f.write(str(message.from_user.id))
         await message.answer("Теперь вы администратов!")
 
 @router.message(Command("users_list"))
@@ -121,4 +126,4 @@ async def start(message: Message):
     if message.text[0] == "/":
         await secret_santa_bot.bot.send_message(message.from_user.id, "Такой команды не существует...")
     else:
-        await secret_santa_bot.bot.send_message(message.from_user.id, "Если вы пытаетесь ввести какую-то информцию, то начните с самого начала, предедущая сессия была сброшена!")
+        await secret_santa_bot.bot.send_message(message.from_user.id, "Если вы пытаетесь ввести какую-то информцию, то начните с начала, предедущая сессия была сброшена!")

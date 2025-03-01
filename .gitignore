@@ -1,3 +1,5 @@
 backup/
-*.db
 __pycache__/
+admin.txt
+baned.txt
+*.db*

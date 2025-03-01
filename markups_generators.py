@@ -7,9 +7,9 @@ import secret_santa_bot
 
 def get_player_settings_keyboard():
     keyboard = InlineKeyboardBuilder()
-    keyboard.button(text="❌ - выгнать", callback_data="kick")
-    keyboard.button(text="✏️ - изменить", callback_data="edit")
-    keyboard.button(text="🛑 - заблокировать", callback_data="ban")
+    keyboard.button(text="❌ выгнать", callback_data="kick")
+    keyboard.button(text="✏️ изменить", callback_data="edit")
+    keyboard.button(text="🛑 заблокировать", callback_data="ban")
     keyboard.adjust(2)
     return keyboard.as_markup()
 
@@ -42,4 +42,12 @@ def get_main_menu_keyboard(is_admin):
 def get_cancel_keyboard():
     keyboard = InlineKeyboardBuilder()
     keyboard.button(text="⛔ отмена", callback_data="cancel")
+    return keyboard.as_markup()
+
+def get_admin_keyboard():
+    keyboard = InlineKeyboardBuilder()
+    keyboard.button(text="📃 игроки", callback_data="players_list")
+    keyboard.button(text="🛑 заблокированные", callback_data="bunned_list")
+    keyboard.button(text="⬅️ назад", callback_data="edit_plr_back")
+    keyboard.adjust(1)
     return keyboard.as_markup()

@@ -1,6 +1,7 @@
 #TODO:                                                                                                                  Vareables
 #TODO:                                                                                                                  Vareables
 #TODO:                                                                                                                  Vareables
+from aiofiles.os import rename
 from aiogram.types import Message
 
 bot = None
@@ -37,6 +38,7 @@ def check_ban(plr_id):
         return baned.find(f"{plr_id}") != -1
 
 def ban(plr_id):
+    cursor.execute("DELETE FROM users WHERE user_id = ?", (plr_id,))
     with open("baned.txt", "w", encoding="utf-8") as f:
         f.write(f"{plr_id}\n")
 
@@ -48,3 +50,4 @@ def unban(plr_id):
                 if lien != plr_id:
                     t.write(f"{lien}\n")
                 lien = f.readline()
+    rename("temp.txt", "baned.txt")

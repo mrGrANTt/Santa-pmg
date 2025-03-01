@@ -28,6 +28,9 @@ async def handle_button_click_cancel(callback_query: CallbackQuery, state: FSMCo
 @router.callback_query(lambda callback: callback.data == "send_admin")
 async def handle_button_click_send_admin(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
+    if not Vareable.ADMIN_ID:
+        await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Администратор не назначен, невозможно отправить ему сообщение...")
+        return
     await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Введите сообщение", reply_markup=markups_generators.get_cancel_keyboard())
     await state.set_state(States.AdmMsgState.message)
 
@@ -97,6 +100,14 @@ async def handle_button_click_edit_plr_back(callback_query: CallbackQuery):
                                         reply_markup=markups_generators.get_main_menu_keyboard(callback_query.from_user.id == Vareable.ADMIN_ID))
 
 
+@router.callback_query(lambda callback: callback.data == "admin_menu")
+async def handle_button_click_admin_menu(callback_query: CallbackQuery):
+    await callback_query.answer()
+    await secret_santa_bot.bot.edit_message_reply_markup(chat_id=callback_query.message.chat.id,
+                                        message_id=callback_query.message.message_id,
+                                        reply_markup=markups_generators.get_admin_keyboard())
+
+
 @router.callback_query(lambda callback: callback.data == "edit_plr_name" or callback.data == "edit_plr_wishes")
 async def handle_button_click_edit_plr_think(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
@@ -120,7 +131,6 @@ async def handle_button_click_ban(callback_query: CallbackQuery):
                                "Проверьте актуальность данных!\nВведите /users_list ещё раз")
         return
 
-    secret_santa_bot.cursor.execute("DELETE FROM users WHERE user_id = ?", (us_id,))
     secret_santa_bot.ban(us_id)
 
     await secret_santa_bot.bot.send_message(us_id,"Вы были заблокированы в игре, вы не можете повторно зарегестрироваться")
