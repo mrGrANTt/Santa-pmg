@@ -1,5 +1,3 @@
-from tokenize import String
-
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -27,7 +25,7 @@ import States
 @router.message(States.JoinGameState.waiting_for_name)
 async def get_name(message: Message, state: FSMContext):
     await state.update_data(name=message.text)
-    await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.PRINT_WISHES_MSG)
+    await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.PRINT_WISHES_MSG, reply_markup=markups_generators.get_cancel_keyboard())
     await state.set_state(States.JoinGameState.waiting_for_wishes)
 
 @router.message(States.JoinGameState.waiting_for_wishes)
@@ -48,6 +46,8 @@ async def get_wishes(message: Message, state: FSMContext):
     if Vareable.ADMIN_ID:
         await secret_santa_bot.bot.send_message(Vareable.ADMIN_ID, f"Пользователь \"{name}\" записан")
     await state.clear()
+    await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.MENU_MSG, reply_markup=markups_generators.get_main_menu_keyboard(message.from_user.id == Vareable.ADMIN_ID, message.from_user.id))
+
 
 @router.message(States.MsgState.message)
 async def egit_values_message(message: Message, state: FSMContext):
@@ -82,15 +82,16 @@ async def admin_message(message: Message):
 @router.message(Command("start"))
 async def start(message: Message, state: FSMContext):
     await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.WELCOME_MSG)
-    await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.MENU_MSG, reply_markup=markups_generators.get_main_menu_keyboard(message.from_user.id == Vareable.ADMIN_ID))
+    await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.MENU_MSG, reply_markup=markups_generators.get_main_menu_keyboard(message.from_user.id == Vareable.ADMIN_ID, message.from_user.id))
 
 @router.message(Command("im_admin"))
 async def im_admin(message: Message):
     if not Vareable.ADMIN_ID:
         Vareable.ADMIN_ID = message.from_user.id
-        with open("admin.txt", "a+", encoding="utf-8") as f:
+        with open("files/admin.txt", "a+", encoding="utf-8") as f:
             f.write(str(message.from_user.id))
         await message.answer("Теперь вы администратов!")
+
 
 @router.message(Command("users_list"))
 async def print_list(message: Message, state: FSMContext):

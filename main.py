@@ -66,7 +66,7 @@ else:
 #TODO:                                                                                                                  start
 
 async def run_bot():
-    print("runBot")
+    print("runningBot")
     await secret_santa_bot.dp.start_polling(secret_santa_bot.bot)
 
 
@@ -77,6 +77,3 @@ if __name__ == "__main__":
     asyncio.run(main())
 
 
-    # пофикшено изменение имён и предпочтений
-    # шаблоны менюшек
-    # сохранение админ id

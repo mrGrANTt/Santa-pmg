@@ -10,19 +10,44 @@ import States
 import markups_generators
 
 
+
 @router.callback_query(lambda callback: callback.data == "register")
 async def handle_button_click_register(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
     if not secret_santa_bot.check_ban(callback_query.from_user.id):
-        await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.PRINT_NAME_MSG)
+        await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.PRINT_NAME_MSG, reply_markup=markups_generators.get_cancel_keyboard())
         await state.set_state(States.JoinGameState.waiting_for_name)
     else:
         await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.YOU_BANED_MSG)
+
+
+@router.callback_query(lambda callback: callback.data == "players_list")
+async def handle_button_click_register(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    if callback_query.from_user.id != Vareable.ADMIN_ID:
+        await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.HAVE_NOT_PERMISSION)
+        return
+    secret_santa_bot.cursor.execute("SELECT * FROM users")
+    result = secret_santa_bot.cursor.fetchall()
+    if not result:
+        await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Тут пока-что пусто(")
+        return
+    for value in result:
+        text = f'{value[0]}) {value[2]} ({value[3]})\n\n{value[4]}'
+        await secret_santa_bot.bot.send_message(callback_query.from_user.id, text, reply_markup=markups_generators.get_player_settings_keyboard())
+
+
+@router.callback_query(lambda callback: callback.data == "game_information")
+async def handle_button_click_info(callback_query: CallbackQuery):
+    await callback_query.answer()
+    await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.GAME_INFO)
 
 @router.callback_query(lambda callback: callback.data == "cancel")
 async def handle_button_click_cancel(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     await state.clear()
     await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Ввод отменён")
+
 
 
 @router.callback_query(lambda callback: callback.data == "send_admin")
@@ -97,7 +122,7 @@ async def handle_button_click_edit_plr_back(callback_query: CallbackQuery):
     await callback_query.answer()
     await secret_santa_bot.bot.edit_message_reply_markup(chat_id=callback_query.message.chat.id,
                                         message_id=callback_query.message.message_id,
-                                        reply_markup=markups_generators.get_main_menu_keyboard(callback_query.from_user.id == Vareable.ADMIN_ID))
+                                        reply_markup=markups_generators.get_main_menu_keyboard(callback_query.from_user.id == Vareable.ADMIN_ID, callback_query.from_user.id))
 
 
 @router.callback_query(lambda callback: callback.data == "admin_menu")

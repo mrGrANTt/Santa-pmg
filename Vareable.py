@@ -1,6 +1,6 @@
-BOT_TOKEN = "7272189082:AAHsqAypl-ozlp5VXLpZqgrCiJkwm3pyiAM"
+BOT_TOKEN = ""
 ADMIN_ID = None
-DB_FILE = "secret_santa.db"
+DB_FILE = "files/secret_santa.db"
 WELCOME_MSG = "пиривет!"
 PRINT_NAME_MSG = "Введи имя!"
 PRINT_WISHES_MSG = "Введи предпочтения!"
@@ -10,11 +10,9 @@ YOU_KICKED_MSG = "Вы были выброшены из игры, но всё е
 MENU_MSG = "Меню"
 MSG_SEND = "Сообщение отправлено"
 HAVE_NOT_PERMISSION = "Недостаточно доступа"
-
-open("admin.txt", "a+", encoding="utf-8")
-with open("admin.txt", "r", encoding="utf-8") as f:
+GAME_INFO = "Игра тайный друг, создана @mrgrantt"
+open("files/admin.txt", "a+", encoding="utf-8")
+with open("files/admin.txt", "r", encoding="utf-8") as f:
     value = f.read()
-    print(value)
     if value and value != "":
         ADMIN_ID = int(value)
-    print(ADMIN_ID)
