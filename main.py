@@ -4,6 +4,8 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.bot import DefaultBotProperties
 import asyncio
 
+from aiogram.utils.token import TokenValidationError
+
 import Vareable
 import button_click_handler
 import msg_cmd
@@ -14,7 +16,12 @@ import secret_santa_bot
 #TODO:                                                                                                                  starting process
 
 # Initializing the bot and dispatcher with async functionality
-secret_santa_bot.bot = Bot(token=Vareable.BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
+try:
+    secret_santa_bot.bot = Bot(token=Vareable.BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
+except TokenValidationError:
+    print("Неверный токен бота. Пожалуйста проверте коректность указанных данных и перезапустите программу...")
+    exit()
+
 secret_santa_bot.dp = Dispatcher()
 
 secret_santa_bot.dp.include_router(router=button_click_handler.router)
@@ -66,7 +73,7 @@ else:
 #TODO:                                                                                                                  start
 
 async def run_bot():
-    print("runningBot")
+    print("Бот запущен!")
     await secret_santa_bot.dp.start_polling(secret_santa_bot.bot)
 
 
