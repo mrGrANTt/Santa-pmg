@@ -61,12 +61,50 @@ async def egit_values_message(message: Message, state: FSMContext):
     await message.answer("Данные обновлены!")
     await state.clear()
 
+
+@router.message(States.GlobalMsgState.message)
+async def global_message(message: Message):
+    if message.from_user.id != Vareable.ADMIN_ID:
+        await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.HAVE_NOT_PERMISSION)
+        return
+    secret_santa_bot.cursor.execute("SELECT user_id FROM users;")
+    res = secret_santa_bot.cursor.fetchall()
+    if res:
+        for one in res:
+            await secret_santa_bot.bot.send_message(one[0], "Глобальное сообщение:")
+            await secret_santa_bot.bot.send_message(one[0], message.text)
+
+
 @router.message(States.AdmMsgState.message)
 async def admin_message(message: Message):
     if Vareable.ADMIN_ID:
         await secret_santa_bot.bot.send_message(Vareable.ADMIN_ID, "Новое сообщение!")
         await secret_santa_bot.bot.send_message(Vareable.ADMIN_ID, message.text)
         await message.answer(Vareable.MSG_SEND)
+
+
+@router.message(States.GetterMsgState.message)
+async def getter_message(message: Message):
+    await send_msg(message, "giver_id")
+
+
+@router.message(States.SantaMsgState.message)
+async def santa_message(message: Message):
+    await send_msg(message, "receiver_id")
+
+
+async def send_msg(message: Message, execute_type):
+    secret_santa_bot.cursor.execute(f"SELECT {execute_type} FROM pairs WHERE (giver_id = ? OR receiver_id = ?) AND {execute_type} != ?", (message.from_user.id,message.from_user.id,message.from_user.id))
+    res = secret_santa_bot.cursor.fetchone()
+    if res:
+        uuid = res[0]
+        if execute_type == "giver_id":
+            await secret_santa_bot.bot.send_message(uuid, "Вам сообщение от получателя:")
+        else:
+            await secret_santa_bot.bot.send_message(uuid, "Вам сообщение от санты:")
+        await secret_santa_bot.bot.send_message(uuid, message.text)
+#TODO: Check working!!!
+
 
 
 
@@ -80,8 +118,12 @@ async def admin_message(message: Message):
 #TODO:                                                                                                                  Commands
 
 @router.message(Command("start"))
-async def start(message: Message, state: FSMContext):
+async def start(message: Message):
     await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.WELCOME_MSG)
+    await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.MENU_MSG, reply_markup=markups_generators.get_main_menu_keyboard(message.from_user.id == Vareable.ADMIN_ID, message.from_user.id))
+
+@router.message(Command("menu"))
+async def start(message: Message):
     await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.MENU_MSG, reply_markup=markups_generators.get_main_menu_keyboard(message.from_user.id == Vareable.ADMIN_ID, message.from_user.id))
 
 @router.message(Command("im_admin"))

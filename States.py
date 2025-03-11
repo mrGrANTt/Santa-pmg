@@ -10,3 +10,12 @@ class MsgState(StatesGroup):
 
 class AdmMsgState(StatesGroup):
     message = State()
+
+class SantaMsgState(StatesGroup):
+    message = State()
+
+class GetterMsgState(StatesGroup):
+    message = State()
+
+class GlobalMsgState(StatesGroup):
+    message = State()

@@ -1,10 +1,15 @@
 import os
 from dotenv import load_dotenv
 
+if not os.path.exists('files'):
+    os.makedirs('files')
+
+open("files/admin.txt", "a+", encoding="utf-8")
+open("files/baned.txt", "a+", encoding="utf-8")
+
 config_file = "files/config.env"
 ADMIN_ID = None
 
-open("files/admin.txt", "a+", encoding="utf-8")
 with open("files/admin.txt", "r", encoding="utf-8") as f:
     value = f.read()
     if value and value != "":
@@ -13,8 +18,8 @@ with open("files/admin.txt", "r", encoding="utf-8") as f:
 if not os.path.exists(config_file):
     with open(config_file, "w", encoding="utf-8") as f:
         f.write("BOT_TOKEN='your_bot_token'\n")
-        f.write("ADMIN_ID='your_tg_id'\n")
         f.write("DB_FILE='files/secret_santa.db'\n")
+        f.write("\n")
         f.write("WELCOME_MSG='пиривет!'\n")
         f.write("PRINT_NAME_MSG='Введи имя!'\n")
         f.write("PRINT_WISHES_MSG='Введи предпочтения!'\n")
@@ -39,7 +44,7 @@ PRINT_NAME_MSG = os.getenv("PRINT_NAME_MSG", "Введи имя!")
 PRINT_WISHES_MSG = os.getenv("PRINT_WISHES_MSG", "Введи предпочтения!")
 SUCCESS_REGISTRY_MSG = os.getenv("SUCCESS_REGISTRY_MSG", "Вы зырегестрированы!")
 YOU_BANED_MSG = os.getenv("YOU_BANED_MSG", "Вы заблокированы!")
-YOU_KICKED_MSG = os.getenv("YOU_KICKED_MSG", "Вы были выброшены из игры, но всё ещё можете повторно зарегестрироваться введя /start'")
+YOU_KICKED_MSG = os.getenv("YOU_KICKED_MSG", "Вы были выброшены из игры, но всё ещё можете повторно зарегестрироваться нажав кнопку в меню'")
 MENU_MSG = os.getenv("MENU_MSG", "Меню")
 MSG_SEND = os.getenv("MSG_SEND", "Сообщение отправлено")
 HAVE_NOT_PERMISSION = os.getenv("HAVE_NOT_PERMISSION", "Не достаточно доступа")

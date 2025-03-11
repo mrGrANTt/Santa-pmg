@@ -1,6 +1,2 @@
-backup/
 __pycache__/
-files/admin.txt
-files/baned.txt
-*.db*
-config.env
+files

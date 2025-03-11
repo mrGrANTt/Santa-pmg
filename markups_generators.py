@@ -10,6 +10,7 @@ def get_player_settings_keyboard():
     keyboard.button(text="❌ выгнать", callback_data="kick")
     keyboard.button(text="✏️ изменить", callback_data="edit")
     keyboard.button(text="🛑 заблокировать", callback_data="ban")
+    keyboard.button(text="💬 написать", callback_data="send_player_adm") #TODO:
     keyboard.adjust(2)
     return keyboard.as_markup()
 
@@ -36,14 +37,15 @@ def get_main_menu_keyboard(is_admin, user_id):
             keyboard.button(text="🎁 участвовать", callback_data="register")
 
     if secret_santa_bot.game_started != 0:
-        keyboard.button(text="💬 написать другу", callback_data="send_friend") #TODO
+        keyboard.button(text="💬 написать другу", callback_data="send_friend")
+        keyboard.button(text="💬 написать санте", callback_data="send_santa")
     if not is_admin:
         keyboard.button(text="⚠️ написать админу", callback_data="send_admin")
     keyboard.button(text="❗информация", callback_data="game_information")
     if is_admin:
         keyboard.button(text="💻 админ понель", callback_data="admin_menu")
     if reg:
-        keyboard.button(text="💔 покинуть игру", callback_data="leave_game") #TODO
+        keyboard.button(text="💔 покинуть игру", callback_data="leave_game")
     keyboard.adjust(1)
     return keyboard.as_markup()
 
@@ -56,6 +58,7 @@ def get_admin_keyboard():
     keyboard = InlineKeyboardBuilder()
     keyboard.button(text="📃 игроки", callback_data="players_list")
     keyboard.button(text="🛑 заблокированные", callback_data="bunned_list") #TODO
+    keyboard.button(text="📬 отправить всем", callback_data="broadcast")
     if secret_santa_bot.game_started:
         keyboard.button(text="💔 прервать игру", callback_data="stop_game") #TODO
     else:
