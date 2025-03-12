@@ -10,7 +10,7 @@ def get_player_settings_keyboard():
     keyboard.button(text="❌ выгнать", callback_data="kick")
     keyboard.button(text="✏️ изменить", callback_data="edit")
     keyboard.button(text="🛑 заблокировать", callback_data="ban")
-    keyboard.button(text="💬 написать", callback_data="send_player_adm") #TODO:
+    keyboard.button(text="💬 написать", callback_data="send_player_adm")
     keyboard.adjust(2)
     return keyboard.as_markup()
 

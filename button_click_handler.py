@@ -210,3 +210,11 @@ async def handle_button_global_send(callback_query: CallbackQuery, state: FSMCon
     await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Введите сообщение:", reply_markup=markups_generators.get_cancel_keyboard())
     await state.set_state(States.GlobalMsgState.message)
 
+@router.callback_query(lambda callback: callback.data == "send_player_adm")
+async def handle_button_click_kick(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    uuid = secret_santa_bot.get_plr_id_from_list(callback_query.message)
+    await state.update_data(uuid=uuid)
+    await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Введите сообщение:", reply_markup=markups_generators.get_cancel_keyboard())
+    await state.set_state(States.UserMsgState.message)
+

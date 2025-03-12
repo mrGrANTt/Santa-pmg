@@ -19,3 +19,6 @@ class GetterMsgState(StatesGroup):
 
 class GlobalMsgState(StatesGroup):
     message = State()
+
+class UserMsgState(StatesGroup):
+    message = State()

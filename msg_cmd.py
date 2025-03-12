@@ -93,6 +93,13 @@ async def santa_message(message: Message):
     await send_msg(message, "receiver_id")
 
 
+@router.message(States.UserMsgState.message)
+async def admin_to_user_mdg(message: Message, state: FSMContext):
+    uuid = int(await state.get_value("uuid"))
+    await secret_santa_bot.bot.send_message(uuid, "Новое сообщение!")
+    await secret_santa_bot.bot.send_message(uuid, message.text)
+    await message.answer(Vareable.MSG_SEND)
+
 async def send_msg(message: Message, execute_type):
     secret_santa_bot.cursor.execute(f"SELECT {execute_type} FROM pairs WHERE (giver_id = ? OR receiver_id = ?) AND {execute_type} != ?", (message.from_user.id,message.from_user.id,message.from_user.id))
     res = secret_santa_bot.cursor.fetchone()
