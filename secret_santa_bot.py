@@ -1,7 +1,8 @@
 #TODO:                                                                                                                  Vareables
 #TODO:                                                                                                                  Vareables
 #TODO:                                                                                                                  Vareables
-from aiofiles.os import rename
+import shutil
+
 from aiogram.types import Message
 
 bot = None
@@ -17,6 +18,15 @@ game_started = None
 
 
 
+import sqlite3
+import Vareable
+from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
+
+conn = sqlite3.connect(Vareable.DB_FILE)
+cursor = conn.cursor()
+bot = Bot(token=Vareable.BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
+dp = Dispatcher()
 
 
 #TODO:                                                                                                                  help func
@@ -39,18 +49,19 @@ def check_ban(plr_id):
 
 def ban(plr_id):
     cursor.execute("DELETE FROM users WHERE user_id = ?", (plr_id,))
+    conn.commit()
     with open("files/baned.txt", "w", encoding="utf-8") as f:
         f.write(f"{plr_id}\n")
 
 def unban(plr_id):
     with open("files/baned.txt", "r", encoding="utf-8") as f:
-        with open("temp.txt", "w", encoding="utf-8") as t:
+        with open("files/temp.txt", "w", encoding="utf-8") as t:
             lien = f.readline()
             while lien != "":
-                if lien != plr_id:
+                if lien.find(str(plr_id)) == -1:
                     t.write(f"{lien}\n")
                 lien = f.readline()
-    rename("temp.txt", "files/baned.txt")
+    shutil.move("files/temp.txt", "files/baned.txt")
 
 def registered(plr_id):
     cursor.execute("SELECT * FROM users WHERE user_id = ?", (plr_id,))

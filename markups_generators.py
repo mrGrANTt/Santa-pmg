@@ -1,3 +1,4 @@
+from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 import secret_santa_bot
 
@@ -54,10 +55,17 @@ def get_cancel_keyboard():
     keyboard.button(text="⛔ отмена", callback_data="cancel")
     return keyboard.as_markup()
 
+def get_unban_keyboard(link, name):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.add(InlineKeyboardButton(text="🪪 профиль", url=f"tg://user?id={link}"))
+    keyboard.button(text="❌ разблокировать", callback_data=f"unban:{link}:{name}")
+    keyboard.adjust(1)
+    return keyboard.as_markup()
+
 def get_admin_keyboard():
     keyboard = InlineKeyboardBuilder()
     keyboard.button(text="📃 игроки", callback_data="players_list")
-    keyboard.button(text="🛑 заблокированные", callback_data="bunned_list") #TODO
+    keyboard.button(text="🛑 заблокированные", callback_data="bunned_list")
     keyboard.button(text="📬 отправить всем", callback_data="broadcast")
     if secret_santa_bot.game_started:
         keyboard.button(text="💔 прервать игру", callback_data="stop_game") #TODO

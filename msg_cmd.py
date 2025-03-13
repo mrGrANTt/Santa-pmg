@@ -173,7 +173,7 @@ async def print_list(message: Message, state: FSMContext):
 
 @router.message()
 async def start(message: Message):
-    if message.text[0] == "/":
+    if message.text and message.text != "" and message.text[0] == "/":
         await secret_santa_bot.bot.send_message(message.from_user.id, "Такой команды не существует...")
     else:
         await secret_santa_bot.bot.send_message(message.from_user.id, "Если вы пытаетесь ввести какую-то информцию, то начните с начала, предедущая сессия была сброшена!")
