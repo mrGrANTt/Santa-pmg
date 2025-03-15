@@ -1,3 +1,4 @@
+import random
 from tkinter.font import names
 
 from aiogram import Router, F
@@ -15,6 +16,9 @@ import markups_generators
 
 @router.callback_query(lambda callback: callback.data == "register")
 async def handle_button_click_register(callback_query: CallbackQuery, state: FSMContext):
+    if secret_santa_bot.game_started is None:
+        await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Игра уже началась. Вы поздно опомнились", reply_markup=markups_generators.get_cancel_keyboard())
+        return
     if not secret_santa_bot.check_ban(callback_query.from_user.id):
         await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.PRINT_NAME_MSG, reply_markup=markups_generators.get_cancel_keyboard())
         await callback_query.answer()
@@ -23,7 +27,7 @@ async def handle_button_click_register(callback_query: CallbackQuery, state: FSM
         await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.YOU_BANED_MSG)
         await callback_query.answer()
 
-@router.callback_query(lambda callback: callback.data == "players_list")
+@router.callback_query(lambda callback: callback.data == "players_list")# TODO: edit later
 async def handle_button_click_register(callback_query: CallbackQuery, state: FSMContext):
     if callback_query.from_user.id != Vareable.ADMIN_ID:
         await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.HAVE_NOT_PERMISSION)
@@ -200,8 +204,14 @@ async def handle_button_click_ban(callback_query: CallbackQuery):
 
 @router.callback_query(lambda callback: callback.data == "leave_game")
 async def handle_button_leave_game(callback_query: CallbackQuery):
+    if secret_santa_bot.game_started is not None:
+        await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Игра уже началась. Поздно уходить")
+        return
+
+    await secret_santa_bot.bot.send_message(Vareable.ADMIN_ID, secret_santa_bot.placeholder("Игрок {name} покидает игру", callback_query.from_user.id))
     secret_santa_bot.cursor.execute("DELETE FROM users WHERE user_id = ?", (callback_query.from_user.id,))
     secret_santa_bot.conn.commit()
+
     await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Вы покинули игру!")
     await secret_santa_bot.bot.send_message(callback_query.from_user.id, secret_santa_bot.placeholder(Vareable.MENU_MSG, callback_query.from_user.id), reply_markup=markups_generators.get_main_menu_keyboard(callback_query.from_user.id == Vareable.ADMIN_ID, callback_query.from_user.id))
     await callback_query.answer()
@@ -209,6 +219,10 @@ async def handle_button_leave_game(callback_query: CallbackQuery):
 
 @router.callback_query(lambda callback: callback.data == "send_friend" or callback.data == "send_santa")
 async def handle_button_send(callback_query: CallbackQuery, state: FSMContext):
+    if secret_santa_bot.game_started is None:
+        await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Игра ещё не начата...")
+        await callback_query.answer()
+        return
     if callback_query.data == "send_friend":
         await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Введите сообщение для получателя", reply_markup=markups_generators.get_cancel_keyboard())
         await callback_query.answer()
@@ -269,4 +283,65 @@ async def handle_button_click_unban_user(callback_query: CallbackQuery):
     secret_santa_bot.unban(uuid)
     await secret_santa_bot.bot.send_message(Vareable.ADMIN_ID, f"Пользователь {name} разблокирован!")
     await secret_santa_bot.bot.send_message(uuid, "Вы разблокированы и снова можете пользоватся ботом.\n Обновите меню введя /menu")
+    await callback_query.answer()
+
+
+@router.callback_query(lambda callback: callback.data == "stop_game")
+async def handle_button_send_player_adm(callback_query: CallbackQuery):
+    if callback_query.from_user.id != Vareable.ADMIN_ID:
+        await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.HAVE_NOT_PERMISSION)
+        await callback_query.answer()
+
+    secret_santa_bot.cursor.execute("SELECT giver_id FROM pairs")
+    res = secret_santa_bot.cursor.fetchall()
+    if res:
+        for one in res:
+            await secret_santa_bot.bot.send_message(int(one[0]), "Игра прервана по решению администрации")
+
+    secret_santa_bot.cursor.execute("DELETE FROM pairs")
+    secret_santa_bot.conn.commit()
+    secret_santa_bot.game_started = None
+
+    await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Игра успешно прервана")
+    await callback_query.answer()
+
+
+@router.callback_query(lambda callback: callback.data == "start_game")
+async def handle_button_send_player_adm(callback_query: CallbackQuery):
+    if callback_query.from_user.id != Vareable.ADMIN_ID:
+        await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.HAVE_NOT_PERMISSION)
+        await callback_query.answer()
+
+    secret_santa_bot.cursor.execute("SELECT user_id FROM users")
+    users = secret_santa_bot.cursor.fetchall()
+
+    if len(users) < 3:
+        await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Недостаточно участников для формирования цепочки")
+        await callback_query.answer()
+        return
+
+    random.shuffle(users)
+    print(users)
+
+    pairs = [(users[i][0], users[(i + 1) % len(users)][0]) for i in range(len(users))]
+    print(pairs)
+
+    secret_santa_bot.cursor.execute("DELETE FROM pairs")
+    secret_santa_bot.cursor.executemany("INSERT INTO pairs (giver_id, receiver_id) VALUES (?, ?)", pairs)
+    secret_santa_bot.conn.commit()
+
+    secret_santa_bot.game_started = 1
+    await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Игра успешно запущена")
+
+    secret_santa_bot.cursor.execute("SELECT pairs.giver_id, users.user_id, users.name, users.wishes FROM pairs INNER JOIN users ON pairs.receiver_id = users.user_id")
+    res = secret_santa_bot.cursor.fetchall()
+
+    if res:
+        for one in res:
+            uuid = int(one[0])
+            msg = await secret_santa_bot.bot.send_message(uuid, f"Вы дарите: {one[2]}\nЕго желания: {one[3]}", reply_markup=markups_generators.get_getter_keyboard(one[1]))
+            await secret_santa_bot.bot.pin_chat_message(one[0], msg.message_id)
+            await secret_santa_bot.bot.send_message(uuid,
+                                                    secret_santa_bot.placeholder(Vareable.MENU_MSG, uuid),
+                                                    reply_markup=markups_generators.get_main_menu_keyboard(uuid == Vareable.ADMIN_ID, uuid))
     await callback_query.answer()

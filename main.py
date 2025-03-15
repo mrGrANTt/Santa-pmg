@@ -54,10 +54,10 @@ secret_santa_bot.cursor.execute("SELECT id FROM pairs LIMIT 1")
 secret_santa_bot.conn.commit()
 
 game_started = secret_santa_bot.cursor.fetchone()
-if secret_santa_bot.game_started:
+if game_started:
     secret_santa_bot.game_started = 1
 else:
-    secret_santa_bot.game_started = 0
+    secret_santa_bot.game_started = None
 
 
 
@@ -89,3 +89,5 @@ if __name__ == "__main__":
 # переписать лист пользователей чтобы тот не нуждался в перезагрузке
 # log в консоли
 # cmd
+# кнопка "инфа о паре" в меню
+# инфа о паре в листе(Если адим не в игре)

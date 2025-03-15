@@ -31,13 +31,13 @@ def get_player_edit_keyboard(mode = 0):
 def get_main_menu_keyboard(is_admin, user_id):
     keyboard = InlineKeyboardBuilder()
     reg = secret_santa_bot.registered(user_id)
-    if not secret_santa_bot.check_ban(user_id):
+    if not secret_santa_bot.check_ban(user_id) and secret_santa_bot.game_started is None:
         if reg:
             keyboard.button(text="✏️ изменить профиль", callback_data="edit_plr")
         else:
             keyboard.button(text="🎁 участвовать", callback_data="register")
 
-    if secret_santa_bot.game_started != 0:
+    if secret_santa_bot.game_started is not None: #TODO: EDIT
         keyboard.button(text="💬 написать другу", callback_data="send_friend")
         keyboard.button(text="💬 написать санте", callback_data="send_santa")
     if not is_admin:
@@ -45,7 +45,7 @@ def get_main_menu_keyboard(is_admin, user_id):
     keyboard.button(text="❗информация", callback_data="game_information")
     if is_admin:
         keyboard.button(text="💻 админ понель", callback_data="admin_menu")
-    if reg:
+    if reg and secret_santa_bot.game_started is None:
         keyboard.button(text="💔 покинуть игру", callback_data="leave_game")
     keyboard.adjust(1)
     return keyboard.as_markup()
@@ -67,10 +67,15 @@ def get_admin_keyboard():
     keyboard.button(text="📃 игроки", callback_data="players_list")
     keyboard.button(text="🛑 заблокированные", callback_data="bunned_list")
     keyboard.button(text="📬 отправить всем", callback_data="broadcast")
-    if secret_santa_bot.game_started:
-        keyboard.button(text="💔 прервать игру", callback_data="stop_game") #TODO
+    if secret_santa_bot.game_started is not None:
+        keyboard.button(text="💔 прервать игру", callback_data="stop_game")
     else:
-        keyboard.button(text="🎁 начать игру", callback_data="start_game") #TODO
+        keyboard.button(text="🎁 начать игру", callback_data="start_game")
     keyboard.button(text="⬅️ назад", callback_data="edit_plr_back")
     keyboard.adjust(1)
+    return keyboard.as_markup()
+
+def get_getter_keyboard(link):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.add(InlineKeyboardButton(text="🪪 профиль", url=f"tg://user?id={link}"))
     return keyboard.as_markup()

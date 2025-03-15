@@ -24,12 +24,18 @@ import States
 
 @router.message(States.JoinGameState.waiting_for_name)
 async def get_name(message: Message, state: FSMContext):
+    if secret_santa_bot.game_started is None:
+        await message.answer("Игра уже началась. Слишком поздно!")
+        return
     await state.update_data(name=message.text)
     await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.PRINT_WISHES_MSG, reply_markup=markups_generators.get_cancel_keyboard())
     await state.set_state(States.JoinGameState.waiting_for_wishes)
 
 @router.message(States.JoinGameState.waiting_for_wishes)
 async def get_wishes(message: Message, state: FSMContext):
+    if secret_santa_bot.game_started is None:
+        await message.answer("Игра уже началась. Слишком поздно!")
+        return
     user_id = message.from_user.id
     us = message.chat.username
     name = (await state.get_data())["name"]
@@ -51,6 +57,9 @@ async def get_wishes(message: Message, state: FSMContext):
 
 @router.message(States.MsgState.message)
 async def egit_values_message(message: Message, state: FSMContext):
+    if secret_santa_bot.game_started is None:
+        await message.answer("Игра уже началась. Нельзя ничего менять!")
+        return
     eType : str = await state.get_value("edit_type")
     if eType == "edit_name" or eType == "edit_plr_name":
         column = "name"
@@ -127,7 +136,7 @@ async def send_msg(message: Message, execute_type):
 @router.message(States.UserMsgState.message)
 async def admin_to_user_msg(message: Message, state: FSMContext):
     uuid = int(await state.get_value("uuid"))
-    await secret_santa_bot.bot.send_message(uuid, "Новое сообщение!")
+    await secret_santa_bot.bot.send_message(uuid, "Новое сообщение от админа!")
     await secret_santa_bot.bot.send_message(uuid, message.text)
     await state.clear()
     await message.answer(Vareable.MSG_SEND)

@@ -19,17 +19,6 @@ game_started = None
 
 
 
-import sqlite3
-import Vareable
-from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
-
-conn = sqlite3.connect(Vareable.DB_FILE)
-cursor = conn.cursor()
-bot = Bot(token=Vareable.BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
-dp = Dispatcher()
-
-
 #TODO:                                                                                                                  help func
 #TODO:                                                                                                                  help func
 #TODO:                                                                                                                  help func
