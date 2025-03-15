@@ -51,7 +51,7 @@ async def handle_button_click_info(callback_query: CallbackQuery):
 async def handle_button_click_cancel(callback_query: CallbackQuery, state: FSMContext):
     await state.clear()
     await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Ввод отменён")
-    await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.MENU_MSG, reply_markup=markups_generators.get_main_menu_keyboard(callback_query.from_user.id == Vareable.ADMIN_ID, callback_query.from_user.id))
+    await secret_santa_bot.bot.send_message(callback_query.from_user.id, secret_santa_bot.placeholder(Vareable.MENU_MSG, callback_query.from_user.id), reply_markup=markups_generators.get_main_menu_keyboard(callback_query.from_user.id == Vareable.ADMIN_ID, callback_query.from_user.id))
     await callback_query.answer()
 
 
@@ -203,7 +203,7 @@ async def handle_button_leave_game(callback_query: CallbackQuery):
     secret_santa_bot.cursor.execute("DELETE FROM users WHERE user_id = ?", (callback_query.from_user.id,))
     secret_santa_bot.conn.commit()
     await secret_santa_bot.bot.send_message(callback_query.from_user.id, "Вы покинули игру!")
-    await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.MENU_MSG, reply_markup=markups_generators.get_main_menu_keyboard(callback_query.from_user.id == Vareable.ADMIN_ID, callback_query.from_user.id))
+    await secret_santa_bot.bot.send_message(callback_query.from_user.id, secret_santa_bot.placeholder(Vareable.MENU_MSG, callback_query.from_user.id), reply_markup=markups_generators.get_main_menu_keyboard(callback_query.from_user.id == Vareable.ADMIN_ID, callback_query.from_user.id))
     await callback_query.answer()
 
 

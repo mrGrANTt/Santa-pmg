@@ -30,6 +30,7 @@ if not os.path.exists(config_file):
         f.write("MSG_SEND='Сообщение отправлено'\n")
         f.write("HAVE_NOT_PERMISSION='Не достаточно доступа'\n")
         f.write("GAME_INFO='Игра тайный друг, создана @mrgrantt'\n")
+        f.write("ADMIN_NOT_STATED_MSG='Админ ещё не назначен. Сообщение не отправлено'\n")
     print(f"{config_file} создан.")
 else:
     print(f"{config_file} уже существует, загрузка значений...")
@@ -49,3 +50,4 @@ MENU_MSG = os.getenv("MENU_MSG", "Меню")
 MSG_SEND = os.getenv("MSG_SEND", "Сообщение отправлено")
 HAVE_NOT_PERMISSION = os.getenv("HAVE_NOT_PERMISSION", "Не достаточно доступа")
 GAME_INFO = os.getenv("GAME_INFO", "Игра тайный друг, создана @mrgrantt")
+ADMIN_NOT_STATED_MSG = os.getenv("ADMIN_NOT_STATED_MSG", "Админ ещё не назначен. Сообщение не отправлено")

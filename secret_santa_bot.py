@@ -2,6 +2,7 @@
 #TODO:                                                                                                                  Vareables
 #TODO:                                                                                                                  Vareables
 import shutil
+from tkinter.font import names
 
 from aiogram.types import Message
 
@@ -66,3 +67,18 @@ def unban(plr_id):
 def registered(plr_id):
     cursor.execute("SELECT * FROM users WHERE user_id = ?", (plr_id,))
     return cursor.fetchone()
+
+def placeholder(string: str, uuid):
+    cursor.execute("SELECT name, wishes FROM users WHERE user_id = ?",(uuid,))
+    res = cursor.fetchone()
+    if res:
+        name = res[0]
+        wishes = res[1]
+    else:
+        name = "-"
+        wishes = "-"
+    return (string
+            .replace("{name}", name)
+            .replace("{wishes}", wishes)
+            .replace("{name\\}", "{name}")
+            .replace("{wishes\\}", "{wishes}"))
