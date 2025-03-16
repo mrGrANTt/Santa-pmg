@@ -2,6 +2,7 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from dotenv import set_key
 
 router = Router()
 
@@ -166,8 +167,7 @@ async def start(message: Message):
 async def im_admin(message: Message):
     if not Vareable.ADMIN_ID:
         Vareable.ADMIN_ID = message.from_user.id
-        with open("files/admin.txt", "a+", encoding="utf-8") as f:
-            f.write(str(message.from_user.id))
+        set_key(Vareable.config_file, "ADMIN_ID", str(Vareable.ADMIN_ID))
         await message.answer("Теперь вы администратов!")
         await secret_santa_bot.bot.send_message(message.from_user.id, secret_santa_bot.placeholder(Vareable.MENU_MSG, message.from_user.id), reply_markup=markups_generators.get_main_menu_keyboard(message.from_user.id == Vareable.ADMIN_ID, message.from_user.id))
 
