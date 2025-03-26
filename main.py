@@ -1,4 +1,6 @@
+import array
 import sqlite3
+from threading import Thread
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.bot import DefaultBotProperties
@@ -8,6 +10,7 @@ from aiogram.utils.token import TokenValidationError
 
 import Vareable
 import button_click_handler
+import console_command
 import msg_cmd
 import secret_santa_bot
 
@@ -60,9 +63,10 @@ else:
     secret_santa_bot.game_started = None
 
 
-
-
-
+commands = {
+    'help': console_command.help_cmd,
+    'stop': console_command.stop_cmd
+}
 
 
 
@@ -74,23 +78,57 @@ else:
 
 async def run_bot():
     print("Бот запущен!")
+    asyncio.create_task(cmd())
     await secret_santa_bot.dp.start_polling(secret_santa_bot.bot)
 
+async def cmd():
+    print('staring console!')
+    while True:
+        cmd_name = await asyncio.to_thread(input, "Введите команду: ")
 
-async def main():
-    await run_bot()
+        arr = cmd_name.split(' ')
+        cmd_name = arr[0]
+        del arr[0]
+
+        await run_command(cmd_name, clean_array(arr))
+        if cmd_name == "stop":
+            break
+
+
+def clean_array(arr):
+    new_arr = list()
+    for a in arr:
+        if a:
+            new_arr.append(a)
+    return new_arr
+
+
+async def run_command(command: str, args: array):
+    if not command:
+        return
+    print()
+    if command in commands:
+        func = commands[command]
+        await func(args)
+    else:
+        print("Unregistered command")
+
+
+
+def main():
+    asyncio.run(run_bot())
 
 if __name__ == "__main__":
-    asyncio.run(main())
-
+    main()  # Запуск программы
 
 #TODO:
-# отвечать на любые сообщение
-# переписать лист пользователей чтобы тот не нуждался в перезагрузке
-# log в консоли
-# cmd
-# кнопка "инфа о паре" в меню
-# инфа о паре в листе(Если адим не в игре)
 # больше конфига
 # убрать ошибки при закрепе
-# вместо ошибки доступа - прозьбу обновить токен
+
+
+# отвечать на любое сообщение
+# переписать лист пользователей чтобы тот не нуждался в перезагрузке
+# log в консоли
+# кнопка "инфа о паре" в меню
+# инфа о паре в листе(Если админ не в игре)
+# вместо ошибки доступа - проcьбу обновить токен
