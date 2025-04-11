@@ -2,7 +2,6 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
-from dotenv import set_key
 
 router = Router()
 
@@ -182,10 +181,19 @@ async def print_list(message: Message, state: FSMContext):
     secret_santa_bot.conn.commit()
     result = secret_santa_bot.cursor.fetchall()
     if not result:
-        await message.answer("Тут пока-что пусто(")
+        await message.answer(Vareable.EMPTY_LIST)
         return
     for value in result:
-        text = f'{value[0]}) {value[2]} ({value[3]})\n\n{value[4]}'
+        text = f'{value[0]})' + (Vareable.USER_LIST_FORMATE
+                                 .replace("{user_id}", value[1])
+                                 .replace("{user_id\\}", "{user_id}")
+                                 .replace("{username}", value[2])
+                                 .replace("{username\\}", "{username}")
+                                 .replace("{name}", value[3])
+                                 .replace("{name\\}", "{name}")
+                                 .replace("{wishes}", value[4])
+                                 .replace("{wishes\\}", "{wishes}")
+                                 )
         await message.answer(text, reply_markup=markups_generators.get_player_settings_keyboard())
 
 
@@ -205,6 +213,6 @@ async def print_list(message: Message, state: FSMContext):
 @router.message()
 async def start(message: Message):
     if message.text and message.text != "" and message.text[0] == "/":
-        await secret_santa_bot.bot.send_message(message.from_user.id, "Такой команды не существует...")
+        await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.COMMAND_NOT_EXIST)
     else:
-        await secret_santa_bot.bot.send_message(message.from_user.id, "Если вы пытаетесь ввести какую-то информцию, то начните с начала, предедущая сессия была сброшена!")
+        await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.NOT_VALID_INPUT)

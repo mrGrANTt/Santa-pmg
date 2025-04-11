@@ -1,6 +1,5 @@
 import array
 import sqlite3
-from threading import Thread
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.bot import DefaultBotProperties
@@ -122,9 +121,7 @@ if __name__ == "__main__":
     main()  # Запуск программы
 
 #TODO:
-# больше конфига
 # убрать ошибки при закрепе
-
 
 # отвечать на любое сообщение
 # переписать лист пользователей чтобы тот не нуждался в перезагрузке

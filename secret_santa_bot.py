@@ -57,16 +57,25 @@ def registered(plr_id):
     return cursor.fetchone()
 
 def placeholder(string: str, uuid):
-    cursor.execute("SELECT name, wishes FROM users WHERE user_id = ?",(uuid,))
+    cursor.execute("SELECT * FROM users WHERE user_id = ?",(uuid,))
     res = cursor.fetchone()
     if res:
-        name = res[0]
-        wishes = res[1]
+        name = res[3]
+        username = res[2]
+        wishes = res[4]
+        user_id = res[1]
     else:
+        user_id = "-"
         name = "-"
+        username = "-"
         wishes = "-"
     return (string
             .replace("{name}", name)
-            .replace("{wishes}", wishes)
             .replace("{name\\}", "{name}")
-            .replace("{wishes\\}", "{wishes}"))
+            .replace("{username}", username)
+            .replace("{username\\}", "{username}")
+            .replace("{wishes}", wishes)
+            .replace("{user_id\\}", "{user_id}")
+            .replace("{user_id}", user_id)
+            .replace("{wishes\\}", "{wishes}")
+            )

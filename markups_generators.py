@@ -44,7 +44,7 @@ def get_main_menu_keyboard(is_admin, user_id):
         keyboard.button(text="⚠️ написать админу", callback_data="send_admin")
     keyboard.button(text="❗информация", callback_data="game_information")
     if is_admin:
-        keyboard.button(text="💻 админ понель", callback_data="admin_menu")
+        keyboard.button(text="💻 админ панель", callback_data="admin_menu")
     if reg and secret_santa_bot.game_started is None:
         keyboard.button(text="💔 покинуть игру", callback_data="leave_game")
     keyboard.adjust(1)
