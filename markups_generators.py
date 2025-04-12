@@ -37,7 +37,7 @@ def get_main_menu_keyboard(is_admin, user_id):
         else:
             keyboard.button(text="🎁 участвовать", callback_data="register")
 
-    if secret_santa_bot.game_started is not None: #TODO: EDIT
+    if reg and secret_santa_bot.game_started is not None: #TODO: EDIT
         keyboard.button(text="💬 написать другу", callback_data="send_friend")
         keyboard.button(text="💬 написать санте", callback_data="send_santa")
     if not is_admin:

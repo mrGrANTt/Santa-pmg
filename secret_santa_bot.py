@@ -60,10 +60,10 @@ def placeholder(string: str, uuid):
     cursor.execute("SELECT * FROM users WHERE user_id = ?",(uuid,))
     res = cursor.fetchone()
     if res:
-        name = res[3]
-        username = res[2]
-        wishes = res[4]
-        user_id = res[1]
+        name = str(res[3])
+        username = str(res[2])
+        wishes = str(res[4])
+        user_id = str(res[1])
     else:
         user_id = "-"
         name = "-"

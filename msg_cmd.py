@@ -24,8 +24,8 @@ import States
 
 @router.message(States.JoinGameState.waiting_for_name)
 async def get_name(message: Message, state: FSMContext):
-    if secret_santa_bot.game_started is None:
-        await message.answer("Игра уже началась. Слишком поздно!")
+    if secret_santa_bot.game_started is not None:
+        await message.answer(Vareable.GAME_IS_STARTED)
         return
     await state.update_data(name=message.text)
     await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.PRINT_WISHES_MSG, reply_markup=markups_generators.get_cancel_keyboard())
@@ -33,8 +33,8 @@ async def get_name(message: Message, state: FSMContext):
 
 @router.message(States.JoinGameState.waiting_for_wishes)
 async def get_wishes(message: Message, state: FSMContext):
-    if secret_santa_bot.game_started is None:
-        await message.answer("Игра уже началась. Слишком поздно!")
+    if secret_santa_bot.game_started is not None:
+        await message.answer(Vareable.GAME_IS_STARTED)
         return
     user_id = message.from_user.id
     us = message.chat.username
@@ -57,8 +57,8 @@ async def get_wishes(message: Message, state: FSMContext):
 
 @router.message(States.MsgState.message)
 async def egit_values_message(message: Message, state: FSMContext):
-    if secret_santa_bot.game_started is None:
-        await message.answer("Игра уже началась. Нельзя ничего менять!")
+    if secret_santa_bot.game_started is not None:
+        await message.answer(Vareable.GAME_IS_STARTED)
         return
     eType : str = await state.get_value("edit_type")
     if eType == "edit_name" or eType == "edit_plr_name":
@@ -69,7 +69,7 @@ async def egit_values_message(message: Message, state: FSMContext):
     secret_santa_bot.cursor.execute(f"UPDATE users SET {column}=? WHERE user_id=?;", (message.text, uuid))
     secret_santa_bot.conn.commit()
     if uuid != message.from_user.id:
-        await secret_santa_bot.bot.send_message(uuid, "Данные вашего аккаунта обновлены обновлены!") #TODO: Check working
+        await secret_santa_bot.bot.send_message(uuid, secret_santa_bot.placeholder(Vareable.YOUR_INFO_UPDATED, uuid))
     await message.answer("Данные обновлены!")
     await state.clear()
     if eType.find("plr") != -1:
@@ -128,7 +128,7 @@ async def send_msg(message: Message, execute_type):
         if execute_type == "giver_id":
             await secret_santa_bot.bot.send_message(uuid, "Вам сообщение от получателя:")
         else:
-            await secret_santa_bot.bot.send_message(uuid, "Вам сообщение от санты:")
+            await secret_santa_bot.bot.send_message(uuid, "Вам сообщение от отправителя:")
         await secret_santa_bot.bot.send_message(uuid, message.text)
 #TODO: Check working!!!
 

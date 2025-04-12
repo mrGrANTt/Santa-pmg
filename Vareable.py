@@ -51,6 +51,7 @@ if not os.path.exists(config_file):
         f.write("YOU_NEED_MORE_PLAYER='Недостаточно участников для формирования цепочки'\n")
         f.write("GAME_SUCCESS_STARTED='Игра успешно запущена'\n")
         f.write("YOU_GIVE_TO='Вы дарите: {name}\nЕго пожелания: {wishes}'\n")
+        f.write("YOUR_INFO_UPDATED='Данные вашего аккаунта обновлены обновлены! Новые данные:\n\nИмя: {name}\nПредпочтения: {wishes}'\n")
     print(f"{config_file} создан.")
 else:
     print(f"{config_file} уже существует, загрузка значений...")
@@ -102,7 +103,7 @@ GAME_SUCCESS_ABORTED =    os.getenv("GAME_SUCCESS_ABORTED", "Игра успеш
 YOU_NEED_MORE_PLAYER =    os.getenv("YOU_NEED_MORE_PLAYER", "Недостаточно участников для формирования цепочки")
 GAME_SUCCESS_STARTED =    os.getenv("GAME_SUCCESS_STARTED", "Игра успешно запущена")
 YOU_GIVE_TO =             os.getenv("YOU_GIVE_TO", "Вы дарите: {name}\nЕго пожелания: {wishes}")
-
+YOUR_INFO_UPDATED =       os.getenv("YOUR_INFO_UPDATED", "Данные вашего аккаунта обновлены обновлены! Новые данные:\n\nИмя: {name}\nПредпочтения: {wishes}")
 
 BOT_TOKEN = None
 with open("files/token.txt", "r", encoding="utf-8") as f:

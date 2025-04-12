@@ -53,9 +53,8 @@ secret_santa_bot.conn.commit()
 
 
 secret_santa_bot.cursor.execute("SELECT id FROM pairs LIMIT 1")
-secret_santa_bot.conn.commit()
-
 game_started = secret_santa_bot.cursor.fetchone()
+
 if game_started:
     secret_santa_bot.game_started = 1
 else:

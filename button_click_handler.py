@@ -16,8 +16,8 @@ import markups_generators
 
 @router.callback_query(lambda callback: callback.data == "register")
 async def handle_button_click_register(callback_query: CallbackQuery, state: FSMContext):
-    if secret_santa_bot.game_started is None:
-        await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.GAME_IS_STARTED, reply_markup=markups_generators.get_cancel_keyboard())
+    if secret_santa_bot.game_started is not None:
+        await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.GAME_IS_STARTED)
         return
     if not secret_santa_bot.check_ban(callback_query.from_user.id):
         await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.PRINT_NAME_MSG, reply_markup=markups_generators.get_cancel_keyboard())
@@ -27,7 +27,7 @@ async def handle_button_click_register(callback_query: CallbackQuery, state: FSM
         await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.YOU_BANED_MSG)
         await callback_query.answer()
 
-@router.callback_query(lambda callback: callback.data == "players_list")# TODO: edit later
+@router.callback_query(lambda callback: callback.data == "players_list")
 async def handle_button_click_register(callback_query: CallbackQuery, state: FSMContext):
     if callback_query.from_user.id != Vareable.ADMIN_ID:
         await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.HAVE_NOT_PERMISSION)
@@ -179,7 +179,9 @@ async def handle_button_click_edit_plr_think(callback_query: CallbackQuery, stat
     else:
         edit_type = "новые предпочтения"
 
-    await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.INPUT_SOMETHING, reply_markup=markups_generators.get_cancel_keyboard())
+    await secret_santa_bot.bot.send_message(callback_query.from_user.id, Vareable.INPUT_SOMETHING
+                                            .replace("{edit_type}", edit_type)
+                                            .replace("{edit_type\\}", "{edit_type}"), reply_markup=markups_generators.get_cancel_keyboard())
     await state.update_data(edit_name_plr=callback_query.from_user.id, edit_type=callback_query.data)
     await callback_query.answer()
     await state.set_state(States.MsgState.message)
