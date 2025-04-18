@@ -212,6 +212,8 @@ async def print_list(message: Message, state: FSMContext):
 
 @router.message()
 async def start(message: Message):
+    if message.pinned_message: return
+
     if message.text and message.text != "" and message.text[0] == "/":
         await secret_santa_bot.bot.send_message(message.from_user.id, Vareable.COMMAND_NOT_EXIST)
     else:
