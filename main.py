@@ -22,6 +22,7 @@ try:
     secret_santa_bot.bot = Bot(token=Vareable.BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
 except TokenValidationError:
     print("Неверный токен бота. Пожалуйста проверте коректность указанных данных и перезапустите программу...")
+    input()
     exit()
 
 secret_santa_bot.dp = Dispatcher()
