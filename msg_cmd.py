@@ -97,7 +97,7 @@ async def admin_message(message: Message, state : FSMContext):
         await secret_santa_bot.bot.send_message(Vareable.ADMIN_ID, message.text)
         await message.answer(Vareable.MSG_SEND)
     else:
-        await message.answer(Vareable.ADMIN_NOT_STATED_MSG)
+        await message.answer(Vareable.ADMIN_NOT_STATED)
     await state.clear()
     await secret_santa_bot.bot.send_message(message.from_user.id, secret_santa_bot.placeholder(Vareable.MENU_MSG, message.from_user.id), reply_markup=markups_generators.get_main_menu_keyboard(message.from_user.id == Vareable.ADMIN_ID, message.from_user.id))
 
